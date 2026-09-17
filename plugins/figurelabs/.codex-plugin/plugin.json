@@ -1,0 +1,27 @@
+{
+  "name": "figurelabs",
+  "version": "0.3.3",
+  "description": "Create and edit scientific figures in FigureLabs with an editable project open beside the conversation.",
+  "author": {
+    "name": "FigureLabs"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "FigureLabs",
+    "shortDescription": "Create scientific figures in an editable FigureLabs project.",
+    "longDescription": "Create or edit scientific figures and view results in the opened project page. For requested chat images or failed browser delivery, try image preview, then a supported local-file fallback. Add checks only for requested exports, formal use or specific problems.",
+    "developerName": "FigureLabs",
+    "category": "Creativity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Connect to FigureLabs in a dedicated task, open an empty illustration project in the built-in browser, and introduce it."
+    ],
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png",
+    "logoDark": "./assets/icon.png"
+  },
+  "mcpServers": "./.mcp.json"
+}
