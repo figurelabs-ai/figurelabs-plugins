@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "figurelabs": {
+      "type": "http",
+      "url": "https://api.figurelabs.ai/plot-mcp"
+    }
+  }
+}
