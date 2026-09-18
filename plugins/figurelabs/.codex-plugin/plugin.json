@@ -19,7 +19,7 @@
     "defaultPrompt": [
       "Connect to FigureLabs in a dedicated task, open an empty illustration project in the built-in browser, and introduce it."
     ],
-    "composerIcon": "./assets/icon.png",
+    "composerIcon": "./assets/icon-transparent.png",
     "logo": "./assets/icon.png",
     "logoDark": "./assets/icon.png"
   },
