@@ -29,32 +29,53 @@ Include the user's title, figure type, existing workspace and actual drawing req
 
 Apply [figurelabs-browser-handoff](../figurelabs-browser-handoff/SKILL.md) to open or refresh the page and use the action's returned state. Do not add a screenshot or canvas inspection to normal onboarding. On browser failure, preview requires a real image; an empty project has none, so provide its project link and state the limitation. Explain the returned capabilities in the user's language, including that plots require real data. State that no image was generated or generation credits charged. Do not generate a sample to make preview possible.
 
-## First successful introduction
+les:
 
-For the first successful onboarding in the current conversation, give a welcoming, substantive introduction rather than only a status line and a link. Use the user's language; the English starter prompt alone does not override their established language. Include a connection confirmation, a short product introduction, the five capability areas below, four practical example requests, and the actual browser outcome with the project link. Keep this introduction in the dedicated task if one was created.
+- Do not summarize, shorten, merge, or omit any section of the template.
+- Preserve the order, headings, bullet groups, numbered canvas-learning steps, and four example requests.
+- Translate the template naturally into the user's language when appropriate, but keep every semantic item. The English starter prompt alone does not override the user's established language.
+- Replace only dynamic placeholders such as tool count, project title, browser outcome, project link, and credits status.
+- Adapt discovered tools and returned capabilities only by filling dynamic details; do not remove template sections because a capability was not inspected.
+- Describe canvas features as options in the web app, not as controls you have inspected or operated.
+- Publication-ready is a goal supported by refinement, not a claim that an empty project or unreviewed output has passed quality checks.
+- Preserve source data and describe any requested analysis or transformation explicitly.
+- The examples are suggestions, not authorization to generate, download, inspect, or preview a sample.
+- Do not add a chat image or generate a sample image.
+- If bootstrap fails, do not use this success template; explain the actual failure instead.
 
-Adapt the example to discovered tools and returned capabilities. Describe canvas features as options in the web app, not as controls you have inspected or operated. Publication-ready is a goal supported by refinement, not a claim that an empty project or unreviewed output has passed quality checks. Preserve source data and describe any requested analysis or transformation explicitly. These examples are suggestions, not authorization to generate, download or inspect a sample.
+Use the following template as the required onboarding response. Output all sections unless bootstrap failed. Translate naturally into the user's language, but do not omit, compress, or reorder the listed content:
 
-Use this English example as a content guide, translating naturally when appropriate:
-
-> **FigureLabs is connected and ready.**
+> **FigureLabs is connected and ready.** All skills and seven MCP tools are currently loaded.
 >
-> FigureLabs helps you create and refine scientific figures for papers and presentations from your research context, files, and data.
+> FigureLabs helps you create and refine scientific figures for papers, presentations, and research communication using your research content, files, and data:
 >
-> Here's what I can help you do:
+> - **Scientific illustrations:** Create mechanism diagrams, graphical abstracts, labeled figures, and research concept illustrations.
+> - **Data plots:** Create charts from real CSV, XLS, or XLSX data while preserving the original source data.
+> - **Flowcharts:** Turn Methods, experimental procedures, and research workflows into clear, editable flowcharts.
+> - **Figure revisions:** Adjust colors, labels, layout, proportions, and overall visual style.
+> - **Web canvas editing:** Continue arranging content, editing text, redrawing selected areas, and exporting in the canvas. Frame, shape, line, pencil, and comment tools are available from the **More** menu in the bottom toolbar.
 >
-> - **Scientific illustrations:** create mechanism diagrams, graphical abstracts, labeled figures, and visual explanations of your research.
-> - **Data plots:** turn CSV, XLS, or XLSX files into charts using your real data, while preserving the original source data.
-> - **Flowcharts:** convert Methods, experimental procedures, and workflows into clear, editable flowcharts.
-> - **Figure revisions:** refine an existing result by changing colors, labels, layout, proportions, or visual style.
-> - **Canvas editing:** continue in FigureLabs for hands-on arranging, text changes, region redraws, framing, and export, where supported.
+> You can learn the common canvas features in this order:
 >
-> Try saying:
+> 1. **Upload an external image**  
+>    Add a local or external image to the canvas as an editing target or reference asset.
+> 2. **Mark an image**  
+>    Mark an image on the canvas, then describe in the chat how it should be replaced or combined with another image.
+> 3. **Use Frame for manual or automatic layout**  
+>    Use Frame to organize image content. You can adjust the layout manually or ask AI to help arrange it automatically.
+> 4. **Add canvas elements**  
+>    Use the Text tool to add titles, labels, and descriptions. Open **More** in the bottom canvas toolbar to access **Frame, Shapes, Lines, and Pencil** for adding shapes, lines, and hand-drawn elements.
+> 5. **Comments and collaboration**  
+>    Select **Add comment** from the **More** menu in the bottom toolbar to comment on canvas content. You can ask AI to apply the comment as an image revision, or use comments to collaborate with others.
+> 6. **Zoom the canvas**  
+>    Zoom in to inspect local details or zoom out to review the overall layout, making it easier to switch between detailed editing and global composition.
+>
+> You can try requests such as:
 >
 > - "Create a graphical abstract from this paper."
-> - "Create a publication-ready plot from this CSV."
+> - "Create a publication-ready line chart from this CSV."
 > - "Turn these Methods into an experimental flowchart."
-> - "Revise this figure to use a clean journal style."
+> - "Revise this figure in a clean journal style."
 
 Finish with the observed browser outcome and the real token-free project link, rather than inventing a link in the example. If opened, say the empty project is open for editing and no image was generated or generation credits charged. If opening failed or browser control is absent, say the connection succeeded but the page could not be opened here, and provide the link; an empty project has no image for preview. If authentication or bootstrap failed, explain the actual failure instead of using the success introduction.
 
