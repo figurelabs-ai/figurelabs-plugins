@@ -1,27 +1,51 @@
 {
   "name": "figurelabs",
-  "version": "0.3.3",
-  "description": "Create and edit scientific figures in FigureLabs with an editable project open beside the conversation.",
+  "version": "0.5.0",
+  "description": "Design scientific figures and diagrams in FigureLabs: mechanism illustrations, graphical abstracts, data plots from your own files, and flowcharts, editable in a FigureLabs project and splittable into layers.",
   "author": {
-    "name": "FigureLabs"
+    "name": "FigureLabs",
+    "email": "support@figurelabs.ai",
+    "url": "https://www.figurelabs.ai"
   },
+  "homepage": "https://www.figurelabs.ai/mcp",
+  "repository": "https://github.com/figurelabs-ai/figurelabs-plugins",
+  "license": "MIT",
+  "keywords": [
+    "scientific figures",
+    "diagrams",
+    "graphical abstract",
+    "data plots",
+    "flowcharts",
+    "layers",
+    "research"
+  ],
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "FigureLabs",
-    "shortDescription": "Create scientific figures in an editable FigureLabs project.",
-    "longDescription": "Create or edit scientific figures and view results in the opened project page. For requested chat images or failed browser delivery, try image preview, then a supported local-file fallback. Add checks only for requested exports, formal use or specific problems.",
+    "shortDescription": "Scientific figures & diagrams",
+    "longDescription": "FigureLabs is a design tool for scientific figures and diagrams. Describe a mechanism, paste a paper abstract or Methods section, or share your own data, and FigureLabs drafts an editable figure in a FigureLabs project: mechanism and pathway illustrations, graphical abstracts, labeled schematics, charts built from your CSV or Excel data, and flowcharts of experimental procedures. Ask for changes in plain language (colors, labels, layout, added or removed elements) and each edit is saved as a new version, so earlier versions stay available. Split a figure or your own image into layers, a background and each element as a transparent PNG with its position plus the recognized text, to rearrange parts in slides or other tools. Open the project in FigureLabs to keep refining text, layout and export settings on the canvas.\n\nIntended for researchers, students and science communicators preparing papers, posters, slides and grant applications.\n\nLimitations: data plots use only the data you provide; FigureLabs does not invent measurements or statistics, and it does not create photographs of people or imitations of experimental images such as gels, blots or micrographs. A FigureLabs account is required; generating, editing and splitting figures uses the credits of your FigureLabs plan. Generation usually takes one to a few minutes; a layer split two to five.",
     "developerName": "FigureLabs",
     "category": "Creativity",
     "capabilities": [
       "Read",
       "Write"
     ],
+    "websiteURL": "https://www.figurelabs.ai",
+    "supportURL": "https://www.figurelabs.ai/docs",
+    "privacyPolicyURL": "https://www.figurelabs.ai/privacy",
+    "termsOfServiceURL": "https://www.figurelabs.ai/terms",
     "defaultPrompt": [
-      "Connect to FigureLabs in a dedicated task, open an empty illustration project in the built-in browser, and introduce it."
+      "Turn this paper abstract into a graphical abstract with clearly labeled steps.",
+      "Plot the attached CSV as a bar chart with error bars, one bar per treatment group.",
+      "Draw a flowchart of the experimental procedure described in my Methods section."
     ],
     "composerIcon": "./assets/icon-transparent.png",
-    "logo": "./assets/icon.png",
-    "logoDark": "./assets/icon.png"
+    "logo": "./assets/icon.png"
   },
-  "mcpServers": "./.mcp.json"
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/figurelabs-onboarding/SKILL.md"
+    }
+  }
 }

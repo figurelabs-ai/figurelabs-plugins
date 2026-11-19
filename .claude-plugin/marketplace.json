@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "figurelabs",
+  "description": "FigureLabs plugins for Claude Code.",
+  "owner": {
+    "name": "FigureLabs",
+    "email": "support@figurelabs.ai"
+  },
+  "plugins": [
+    {
+      "name": "figurelabs",
+      "source": "./plugins/figurelabs",
+      "description": "Design scientific figures and diagrams in FigureLabs: mechanism illustrations, graphical abstracts, data plots from your own files, and flowcharts, editable in a FigureLabs project and splittable into layers.",
+      "category": "design",
+      "homepage": "https://www.figurelabs.ai"
+    }
+  ]
+}

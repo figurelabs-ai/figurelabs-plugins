@@ -1,26 +1,32 @@
 ---
 name: figurelabs-file-import
-description: Import attachments, accessible file URLs or local files for FigureLabs generation and editing, then pass the returned file references to the correct tool. Use for reference images and CSV/XLS/XLSX plotting data.
+description: Bring user files into FigureLabs before creating or editing a figure. Use when the user attaches or points to a data file (CSV, TSV, JSON, XLS, XLSX) for a plot, or a reference image or document for an illustration, an edit or a layer split.
 ---
 
-# Import the requested inputs
+# Import files
 
-Use only this plugin's `figurelabs` MCP connection. Import files needed for the user's request and keep returned file_id, purpose, MIME type, expiry and connection together. Never reuse another environment's file ID. Uploading an input is not creating a project or generating a figure.
+Use only this plugin's `figurelabs` MCP connection. Import only files the user has explicitly provided or named for this request. Do not search the user's computer or account for other files.
 
-## Choose a supported source
+## Choose how
 
-- A valid FigureLabs file_id for this environment can be reused directly as `source=figurelabs_file`; do not upload it again unnecessarily.
-- For an accessible HTTPS URL, call `figurelabs_upload_file` with `source=temporary_url` and `uri`. For an OpenAI attachment download URL, use `source=openai_file` and `download_url`, plus known filename/MIME information supported by the schema.
-- For small available file bytes, `source=inline_base64` with `data` is supported. The decoded single-file limit is currently 1 MB; do not embed larger files into tool JSON or invent a download URL for a local path.
-- For a local path and a host able to read/upload it, call `figurelabs_create_file_import_session` with purpose `reference` or `plot_data`. Follow [local upload](references/local-upload.md) using the returned endpoint, token header and limits. Creating the session alone does not upload the file.
-- If the host cannot read or upload a local file and no accessible attachment URL exists, explain the limitation and request an attachment through the client's supported input flow. Do not manufacture data or a file_id.
+| Where the file is | Do |
+| --- | --- |
+| Attached in ChatGPT | Pass the attachment straight to the tool that uses it: `attachments` on `figurelabs_create_illustration`, `figurelabs_create_plot` and `figurelabs_edit_figure`, `attachment` on `figurelabs_split_layers`. ChatGPT supplies the file object. |
+| A public or pre-signed `https://` link | Pass the link straight in the tool's `file_refs` (`file_ref` for a split). Use `figurelabs_upload_file` with `url` only when you need the file ID first, or the link has no file extension (then give `filename`). |
+| Small content already in the conversation (at most 1 MB) | `figurelabs_upload_file` with `base64` and `filename` (with extension); `mime_type` when the extension does not say it. |
+| A local file in Claude Code, Codex or another agent that can run commands | `figurelabs_create_upload_session`, then upload as described in [local upload](references/local-upload.md). |
+| Attached in a Claude chat | Use it only if the host provides a URL or the content; otherwise ask the user to paste the data, share a link or upload the file at figurelabs.ai. |
 
-Use `purpose=plot_data` for chart data. Plot consumes CSV/XLS/XLSX or actual structured data; an image of a chart is not its underlying data. Preserve original values, units and missingness. Resolve missing columns or ambiguous semantics before generating statistics. Other tool types may accept reference images/documents, but audio and video are not supported inputs.
+- Set `purpose` to `plot_data` for chart data and `reference` for images or documents.
+- Limits: 20 MB per file, up to 5 files per call. Plot data: CSV, TSV, JSON, XLS or XLSX. References: images or PDF. A layer split takes one PNG or JPEG.
+- Keep the returned `file_id` (`figfile_…`) and pass it in `file_refs` (or `data_file_ids` for a plot, `file_ref` for a split). When a create or edit call imports files itself, its result names the new file IDs: reuse them on a retry instead of importing again. An upload session token, a ChatGPT file ID or a guess is not a FigureLabs file ID.
+- Imported files are kept for about a day; import again after that.
+- `figurelabs_create_flowchart` takes no files; put what matters from a document into its prompt.
 
-## Confirm import and hand off
+Importing a file spends no credits.
 
-Check the upload result for errors and an actual FigureLabs file_id. For the local HTTP upload, inspect both the HTTP response and the business envelope; use `data.file_id` only after success. A session upload_token or an OpenAI file ID is not a FigureLabs file_id.
+## Data for plots
 
-Pass the returned reference through the chosen generation tool's supported `files`, `data_file` or `data_files` parameter, for example `{"source":"figurelabs_file","file_id":"<returned file_id>"}`. Include other metadata only as required by the live schema. Resume [figurelabs-generation](../figurelabs-generation/SKILL.md) or the pending [figurelabs-canvas-edit](../figurelabs-canvas-edit/SKILL.md) workflow, retaining the user's original intent.
+Keep the user's values, units and missing entries as they are. A screenshot of a chart is not data. If the file has several sheets or ambiguous columns, ask which to use before plotting. Numbers typed or pasted in the conversation go straight into `figurelabs_create_plot`'s `data` as CSV text with a header row, without uploading a file.
 
-For an expired import token, create one replacement session if the upload is still needed and retry once. For an uncertain upload response, reuse any returned valid file reference; do not proceed with a guessed identifier. Never put import tokens in final replies or persistent plugin files. Upload endpoints are HTTP transfer destinations, not browser handoff URLs.
+Then continue with [figurelabs-generation](../figurelabs-generation/SKILL.md), [figurelabs-edit](../figurelabs-edit/SKILL.md) or [figurelabs-layers](../figurelabs-layers/SKILL.md).

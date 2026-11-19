@@ -1,99 +1,105 @@
-# FigureLabs for Codex — installation and first-session guide
+# FigureLabs plugin: installation and first-session guide for agents
 
-This page describes installation only when the user explicitly asks to install or set up FigureLabs. If the user asks to inspect, explain, compare, or review this page, answer that request without changing configuration or creating a task. Follow the host's permissions and the user's instructions throughout.
+This page tells an AI agent how to install the FigureLabs plugin in Codex or Claude Code. Act on it only when the user explicitly asks to install or set up FigureLabs. If the user asks to inspect, explain, compare or review this page, answer that request without changing configuration. Follow the host's permissions and the user's instructions throughout.
 
 ## Distribution identity
 
-- Repository: https://github.com/figurelabs-ai/figurelabs-plugins.git
-- Git ref: main
-- Marketplace: figurelabs-marketplace
-- Plugin: figurelabs
-- Qualified plugin ID: figurelabs@figurelabs-marketplace
-- Marketplace manifest: .agents/plugins/marketplace.json
-- Plugin directory: plugins/figurelabs
-- Plugin manifest: plugins/figurelabs/.codex-plugin/plugin.json
-- Bundled MCP configuration: plugins/figurelabs/.mcp.json
-- Expected MCP server name: figurelabs
-- Expected remote MCP URL: https://api.figurelabs.ai/plot-mcp
+| | |
+| --- | --- |
+| Repository | `https://github.com/figurelabs-ai/figurelabs-plugins` (Git ref `main`) |
+| Plugin | `figurelabs`, in `plugins/figurelabs` |
+| Codex marketplace | `figurelabs-marketplace` (`.agents/plugins/marketplace.json`); plugin ID `figurelabs@figurelabs-marketplace`; manifest `plugins/figurelabs/.codex-plugin/plugin.json` |
+| Claude Code marketplace | `figurelabs` (`.claude-plugin/marketplace.json`); plugin ID `figurelabs@figurelabs`; manifest `plugins/figurelabs/.claude-plugin/plugin.json` |
+| MCP server | name `figurelabs`, remote (streamable HTTP), `https://mcp.figurelabs.ai/mcp`, configured in `plugins/figurelabs/.mcp.json` |
+| Authorization | OAuth in the user's browser with their FigureLabs account; scope `figurelabs.mcp` |
 
-This is the production environment. It distributes five workflow skills and a remote MCP connection. It does not install or deploy the FigureLabs backend. Use an account with access to the production service. Do not substitute development or production connections. Generation/editing is subject to that service's permissions, quotas, and credit rules.
+The plugin contains six skills and the MCP server entry. It runs no local code and does not install a server. Do not hard-code a version: read it from the manifest on the selected ref. Use only the MCP address above; do not substitute another FigureLabs address.
 
-## 1. Identify supported installation capabilities
+## 1. Find out what the host can do
 
-Inspect the client's available plugin-management tools or documented CLI. If a local terminal is available, check:
+Identify the host you are running in (Codex or Claude Code) and inspect its plugin commands before using them:
 
-    codex --version
-    codex plugin --help
+```sh
+codex --version && codex plugin --help
+claude --version && claude plugin --help
+```
 
-Do not assume the shell's Codex CLI and the desktop app are the same version. An older standalone CLI may lack plugin commands even when the desktop app can install plugins. If CLI plugin management is absent, use supported desktop plugin-management tools or guide the user through the Plugins UI. Do not install another CLI or modify unrelated settings without appropriate user authorization.
-
-Use available list/read operations to check the installed marketplace, plugin, enabled state, and authentication status. If CLI help exposes these commands, use:
-
-    codex plugin marketplace list --json
-    codex plugin list --json
-
-Confirm options with command help before use. If the same plugin is already installed and enabled from the correct source, reuse it. If a same-named marketplace points elsewhere, explain the collision rather than replacing it. Preserve all unrelated plugins, MCP registrations, and credentials.
+- A desktop app and the CLI on the shell's `PATH` can be different versions. If the CLI lacks plugin commands, use the app's plugin management or guide the user through its Plugins UI. Do not install another CLI or change unrelated settings without the user's authorization.
+- Check what is already there (`codex plugin marketplace list`, `codex plugin list`; `claude plugin marketplace list`, `claude plugin list`). If `figurelabs` is installed and enabled from this repository, update it (step 2) instead of installing it again. If a marketplace of the same name points somewhere else, explain the collision and do not replace it.
+- Preserve all unrelated plugins, MCP registrations and credentials.
 
 ## 2. Add the marketplace and install the plugin
 
-When supported, add the GitHub source with no sparse-path restriction:
+Adding the marketplace is not the same as installing the plugin; do both.
 
-    codex plugin marketplace add figurelabs-ai/figurelabs-plugins --ref main
+**Codex**
 
-Adding the source is not the same as installing the plugin. If the installed CLI explicitly supports `codex plugin add`, confirm its syntax with help, then install:
+```sh
+codex plugin marketplace add figurelabs-ai/figurelabs-plugins --ref main
+codex plugin add figurelabs@figurelabs-marketplace
+```
 
-    codex plugin add figurelabs@figurelabs-marketplace
+In the desktop app: open Plugins, add the repository as a marketplace with Git ref `main` and no sparse paths, then install FigureLabs from it.
 
-Otherwise use the client's documented plugin-install capability. For manual desktop installation: open Plugins, add the repository URL as a marketplace, set Git ref to main, leave sparse paths empty, and install FigureLabs from figurelabs-marketplace. Ask the user to complete only actions the agent cannot perform or that require the user's confirmation.
+**Claude Code**
 
-Verify the installed plugin identity, enabled state, and version against the manifest actually fetched from the selected Git ref. Do not hard-code a release version. Inspect the bundled MCP configuration and verify the production URL above. Do not merely clone the repository and report installation. Do not copy files into the client's cache or create a duplicate standalone MCP registration to bypass installation.
+```sh
+claude plugin marketplace add figurelabs-ai/figurelabs-plugins
+claude plugin install figurelabs@figurelabs
+```
 
-## 3. Connect, authenticate, and verify before creating the dedicated task
+Inside a Claude Code session the same commands are `/plugin marketplace add figurelabs-ai/figurelabs-plugins` and `/plugin install figurelabs@figurelabs`.
 
-Complete the client's supported FigureLabs OAuth/connection flow. Let the user complete interactive sign-in and authorization as required. Never ask the user to paste a password, token, or API key into the conversation. Do not assume a standalone `codex mcp login figurelabs` command addresses a plugin-scoped server; use it only if the host documents that mapping.
+**Updating an earlier version**
 
-Use the host's documented Connect, Authorize, or Reconnect operation for this installed plugin when available. If it presents an authorization URL or opens a login page, guide the user through that flow and keep the installation pending. After the user completes authorization, resume in this installation conversation and recheck the connection. A login page opening, a user saying "done", or a plugin policy of ON_INSTALL is not sufficient evidence of authentication success.
+```sh
+codex plugin marketplace upgrade figurelabs-marketplace   # then update or reinstall the plugin
+claude plugin marketplace update figurelabs && claude plugin update figurelabs@figurelabs
+```
 
-Before step 4, require evidence of BOTH:
+Versions before 0.5.0 connected to a different address. After updating from one of them the user signs in once more (step 3), and a new session is needed for the new skills and tools to load.
 
-- Authentication succeeded for this plugin-scoped test connection, from the host's successful authorization result or current connection status. Do not read or expose credential storage to establish this.
-- The host completed MCP initialization/tool discovery for the same connection, for example a successful authenticated tools/list or a host runtime status that confirms discovered tools. Installed skill files and a configured URL do not meet this requirement.
+Confirm command syntax with `--help` before use. Then verify the installed plugin: its identity, that it is enabled, its version against the manifest fetched from the ref, and that its MCP configuration names `https://mcp.figurelabs.ai/mcp`. Cloning the repository is not an installation. Do not copy files into the host's cache, and do not register a second standalone MCP server to get around the plugin.
 
-Verify availability without creating a project or generating an image. Use host connection management or read-only discovery; do not invoke figurelabs_project_bootstrap as an authentication probe.
+## 3. Connect and sign in
 
-If the host lacks an operation to start authorization, give the exact supported manual connection step and keep this installation pending here. If a restart is required, explain it and resume verification after the user returns. Do not create a dedicated onboarding task merely to move an unresolved authentication or connection problem elsewhere. If the host cannot verify runtime discovery until a new task exists, explain that limitation and ask whether the user wants a diagnostic task; this is an explicit exception, not an automatic substitute for the requested authenticate-first flow.
+The MCP server requires OAuth. The user completes sign-in and authorization in their browser; never ask them to paste a password, token or API key into the conversation, and never read credential storage.
 
-Missing tools alone do not prove missing authorization. Distinguish an unloaded plugin snapshot, disabled server, discovery/transport error, and a confirmed authentication challenge using observed evidence. Do not repeatedly start OAuth when the host reports valid authentication.
+- **Codex:** complete the sign-in the app offers when the plugin is installed, or the host's Connect / Authorize / Reconnect action for the plugin. From a terminal, `codex mcp list` shows the plugin's server as `figurelabs` with its sign-in state; `codex mcp login figurelabs` starts the sign-in when it is listed there.
+- **Claude Code:** in a session, run `/mcp`, select the `figurelabs` server of the plugin and choose Authenticate.
 
-Track installation, authentication, and runtime reachability separately. If any prerequisite remains unknown or failed, report "installed; connection setup pending" with the remaining step. Do not mark the full install-and-start request complete.
+A login page opening, or the user saying "done", is not evidence of success. Before reporting the connection as working, require both:
 
-## 4. Create exactly one dedicated task when requested
+1. The host reports the authorization as successful or the server as connected.
+2. The host completed tool discovery on that connection. The server lists these tools: `figurelabs_create_illustration`, `figurelabs_create_plot`, `figurelabs_create_flowchart`, `figurelabs_edit_figure`, `figurelabs_split_layers`, `figurelabs_get_job`, `figurelabs_show_figure`, `figurelabs_get_credits`, `figurelabs_open_project`, `figurelabs_upload_file`, `figurelabs_create_upload_session`.
 
-Only if the user's request includes setting up a new task/conversation, use the host's supported new-task capability AFTER installation is verified, the plugin is enabled, AND step 3 has confirmed authentication and runtime discovery. Installation/enabled flags alone must never trigger this step. Prefer a projectless task when supported; installation does not require checking out the user's business repository.
+Installed skill files and a configured URL do not prove either. Before sign-in the server answers `401` with a `WWW-Authenticate` header that points to its OAuth metadata; that is the expected state of a server that is reachable and not yet authorized, not an outage.
 
-Read the installed plugin's `interface.defaultPrompt` from its `.codex-plugin/plugin.json`. Use the first non-empty string from that array. Do not invent a replacement if the manifest is missing or malformed; report the problem.
+To confirm an authorized connection with a call, use `figurelabs_get_credits`: it is read-only, spends nothing and creates nothing. Do not call a create, edit or split tool as a probe; they spend the user's credits.
 
-Create one task titled "FigureLabs" and send the default prompt as part of its initial message, together with this context:
+Missing tools alone do not prove missing authorization. Tell apart a plugin that has not loaded in the current session (start a new one), a disabled server, a transport error and a real authorization challenge, from what you observe. Do not start OAuth again when the host reports valid authentication.
 
-    This is the dedicated FigureLabs task requested by the user. Stay in this task; do not create another task, even if the default prompt mentions a dedicated task. Use only the installed figurelabs plugin and its MCP connection at https://api.figurelabs.ai/plot-mcp. Verify that its skills and tools are loaded. Follow the plugin's onboarding workflow to connect, create an empty illustration project, open it if supported, and introduce the capabilities in the user's language. Do not generate a sample image. If authorization or a required capability is missing, explain the limitation and guide the user through the supported next step. Do not switch to another FigureLabs environment.
+Track installation, authorization and tool discovery separately. If one of them is unknown or failed, report "installed; connection setup pending" with the remaining step, and do not report the request as complete.
 
-Append the actual default prompt read from the installed manifest. Use one initial message or one follow-up, not both. The child task must not repeat installation or spawn another dedicated task.
+## 4. First session, when the user asks for one
 
-Include a brief, non-secret summary of the authentication and discovery evidence from step 3. The new task should reuse the existing authorized connection and check its own loaded tools. It must not request another login unless the host reports that credentials have expired or are invalid. Never copy tokens or credentials into its prompt.
+Only if the request includes starting to use FigureLabs, and only after step 3 passed:
 
-If the host cannot create a task or send its initial prompt, provide the default prompt and ask the user to open a new conversation manually. Do not simulate a new task by relabeling the current conversation or claim a task was created without a returned task identifier.
+- Plugins load when a session starts. If the current session does not have the FigureLabs skills and tools, start a new session or task when the host supports it, or ask the user to open one. Create at most one, and do not claim one was created without an identifier from the host.
+- In that session follow the plugin's `figurelabs-onboarding` skill: confirm the connection, introduce the capabilities in the user's language, then wait for a request. Do not generate a sample figure. Open an empty project (`figurelabs_open_project`) only if the user asked for one.
+- The session reuses the existing authorization. It must not ask for another login unless the host reports the credentials as expired or invalid. Never copy tokens into a prompt.
 
-## 5. Verify the handoff
+## 5. Report
 
-When host tools support it, open the new task and read its status. Even after preflight succeeds, a created task is not proof that its own plugin snapshot loaded correctly. Let that task verify its own plugin/tool availability and perform onboarding. If it lacks tools, report an unresolved runtime handoff, not a successful end-to-end setup or an assumed OAuth failure. The expected outcome is an empty editable project and an introduction, not a generated figure.
-
-Report only what was observed: installation state and version, authorization/runtime state if checked, the new task link or identifier, and any remaining user action. Do not report connection or project creation before it succeeds. Do not publish, push Git changes, submit content elsewhere, or start paid generation as part of installation.
+Report only what you observed: the installed version, whether the plugin is enabled, the authorization and tool-discovery state, any session you created, and what the user still has to do. Do not report a connection or a project before it exists. Installation never includes generating a figure, spending credits, pushing Git changes or publishing anything.
 
 ## Troubleshooting
 
-- "marketplace root does not contain a supported manifest": verify .agents/plugins/marketplace.json exists at repository root on the selected ref, and leave sparse paths empty.
-- Plugin missing after adding marketplace: verify the entry points to ./plugins/figurelabs and install the entry explicitly.
-- Skills or tools missing in the current task: verify installed/enabled state and host connection/authentication/discovery status; refresh/restart if required. Keep the connection setup pending in the installation conversation until step 3 passes. Creating a diagnostic task requires the explicit exception described there. Do not substitute another environment.
-- OAuth or service error: report the actual error; do not claim the production service is online merely because its URL is configured.
+- **"marketplace root does not contain a supported manifest" (Codex):** `.agents/plugins/marketplace.json` must exist at the repository root on the selected ref; leave sparse paths empty.
+- **Plugin missing after adding the marketplace:** the marketplace entry points to `./plugins/figurelabs`; install the plugin explicitly.
+- **Skills or tools missing in the current session:** check installed and enabled state, then authorization and discovery; start a new session. Do not substitute another address.
+- **Tools still carry old names, or calls go to an old address:** an earlier version is cached. Update the marketplace and the plugin (step 2), sign in again and start a new session.
+- **In Codex, FigureLabs calls go through the ChatGPT connector:** when the user has also connected FigureLabs in ChatGPT, Codex may use that connection instead of the plugin's own server. Both reach the same FigureLabs service and tools, each with the account that signed in on that connection.
+- **OAuth or service error:** report the actual error. A configured URL does not prove the service is reachable.
 
-Official packaging reference: https://developers.openai.com/plugins/build/plugins
+Packaging references: [Codex plugins](https://developers.openai.com/codex/plugins), [Claude Code plugins](https://code.claude.com/docs/en/plugins).
