@@ -27,17 +27,19 @@ Terminal and coding agents (Claude Code, Codex and similar) have no card.
 
 Without a card, the project page is where the user sees the full result: the full-size figure, its earlier versions and layers, and the tools to keep editing.
 
-- If the host gives you a browser the user can see (for example the Codex in-app browser), open `project_url` there once the figure or split has finished. Do it by default, without being asked.
+- If the host gives you a browser the user can see (for example the Codex in-app browser), open the project there once the figure or split has finished. Do it by default, without being asked.
+- Open `handoff_url` when the result has one: it signs that browser in as the user and lands on the project. Without it, open `project_url`.
+- `handoff_url` is a one-time sign-in link. Use it only to open the browser. Never put it in a reply, a file, a note or another tool call; the link you give the user is always `project_url`.
 - Open each project once. If its page is already open, leave it as it is: do not reload it, since that can discard what the user is doing on the canvas. After an edit, say that the new version is in the project.
 - Still present the result in the conversation as described under Present; the browser adds to the reply, it does not replace it.
-- The user may have to sign in to FigureLabs in that browser the first time. Let them; never fill in or ask for credentials.
-- With no such browser (a plain terminal), give the link and do nothing else. Do not start a system browser or any other program to show the figure.
+- If the page still asks the user to sign in, let them; never fill in or ask for credentials.
+- With no such browser (a plain terminal), give `project_url` and do nothing else: leave `handoff_url` unused, and do not start a system browser or any other program to show the figure.
 - Opening the page is all you do there: do not click, type or otherwise operate the canvas.
 
 ## Present
 
 - Say what was created or changed, give the project link from the result (`project_url`) and the credits charged when reported (`credits_charged`).
-- Leave `image_url` and other signed links out of the reply, as images and as links; they expire. Give them only when the user asks to download the file. To show a figure again later, call `figurelabs_show_figure` with its `source_id` (and `version_id` for a specific version). It is read-only and spends no credits. If it answers that an earlier version cannot be shown yet, show the latest version and say so.
+- Leave `image_url`, `handoff_url` and other signed links out of the reply, as images and as links; they expire, and `handoff_url` signs in whoever opens it. Give them only when the user asks to download the file. To show a figure again later, call `figurelabs_show_figure` with its `source_id` (and `version_id` for a specific version). It is read-only and spends no credits. If it answers that an earlier version cannot be shown yet, show the latest version and say so.
 - Never send the same request again to get a new link or a better display.
 
 ## Failures
