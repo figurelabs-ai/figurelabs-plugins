@@ -22,7 +22,17 @@ Terminal and coding agents (Claude Code, Codex and similar) have no card.
 - The create, edit or split call waits up to about 25 seconds and may already return the finished figure. If it returns `status: running` or `queued`, call `figurelabs_get_job` with the same `job_id` after `retry_after_seconds`. `figurelabs_get_job` also waits up to about 25 seconds before it answers, so a figure takes a few calls; keep using the `retry_after_seconds` of each result and do not poll faster.
 - While waiting, tell the user it is still generating; do not start other FigureLabs jobs for the same request.
 - After about 10 minutes still running, stop polling, give the project link and say the job is still in progress. A long wait is not a failure and is no reason to generate again.
-- If the host has a browser the user is working in, you may open `project_url` there; otherwise give it as a link.
+
+### Open the project where the host has a browser
+
+Without a card, the project page is where the user sees the full result: the full-size figure, its earlier versions and layers, and the tools to keep editing.
+
+- If the host gives you a browser the user can see (for example the Codex in-app browser), open `project_url` there once the figure or split has finished. Do it by default, without being asked.
+- Open each project once. If its page is already open, leave it as it is: do not reload it, since that can discard what the user is doing on the canvas. After an edit, say that the new version is in the project.
+- Still present the result in the conversation as described under Present; the browser adds to the reply, it does not replace it.
+- The user may have to sign in to FigureLabs in that browser the first time. Let them; never fill in or ask for credentials.
+- With no such browser (a plain terminal), give the link and do nothing else. Do not start a system browser or any other program to show the figure.
+- Opening the page is all you do there: do not click, type or otherwise operate the canvas.
 
 ## Present
 
