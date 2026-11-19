@@ -15,7 +15,7 @@ Use only this plugin's `figurelabs` MCP connection.
 
 ## Introduce
 
-Give a short introduction once per conversation, in the user's language, then wait for a request. Do not generate a sample figure.
+Give a short introduction once per conversation, in the user's language, then wait for a request. Do not generate a sample figure. If the session was started with a request to run a "default prompt" or "default connection prompt", this introduction is that prompt: the example requests listed in the plugin manifest are suggestions for the user, not something to run.
 
 > FigureLabs is connected. It designs scientific figures you can keep editing in a FigureLabs project:
 >

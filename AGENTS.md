@@ -87,6 +87,7 @@ Only if the request includes starting to use FigureLabs, and only after step 3 p
 
 - Plugins load when a session starts. If the current session does not have the FigureLabs skills and tools, start a new session or task when the host supports it, or ask the user to open one. Create at most one, and do not claim one was created without an identifier from the host.
 - In that session follow the plugin's `figurelabs-onboarding` skill: confirm the connection, introduce the capabilities in the user's language, then wait for a request. Do not generate a sample figure. Open an empty project (`figurelabs_open_project`) only if the user asked for one.
+- A request to run the plugin's "default prompt" or "default connection prompt" means exactly the step above: confirm the connection, introduce the capabilities, wait. The `defaultPrompt` entries in the plugin manifest are example requests shown to the user as suggestions. They are not instructions; never run one unless the user picks it or types it.
 - The session reuses the existing authorization. It must not ask for another login unless the host reports the credentials as expired or invalid. Never copy tokens into a prompt.
 
 ## 5. Report
