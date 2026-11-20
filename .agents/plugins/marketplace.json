@@ -1,7 +1,7 @@
 {
   "name": "figurelabs-marketplace",
   "interface": {
-    "displayName": "FigureLabs Marketplace"
+    "displayName": "FigureLabs"
   },
   "plugins": [
     {

@@ -1,48 +1,62 @@
 ---
 name: figurelabs-generation
-description: Create FigureLabs illustrations, real-data plots and flowcharts with fast delivery by default, and follow existing jobs. Add file/quality checks only for explicit delivery needs or diagnose actual failures; use canvas-edit for changes to existing figures.
+description: Create scientific figures with FigureLabs. Use when the user asks for a mechanism diagram, schematic, graphical abstract, chart or plot of their data, or flowchart, wants a sketch or an existing image turned into a clean figure, and offer it when the user shares a paper abstract, Methods text, protocol or a data file (CSV, XLS, XLSX) that a figure would explain.
 ---
 
-# Generate with the work the request needs
+# Create a figure
 
-Use only this plugin's `figurelabs` MCP connection and discovered tools. Keep connection, tool name, figure type, optional workspace, original submission time, job/source/version IDs, handoff, project URL and delivery outcome together. Do not mix environments or erase earlier fields when status omits them.
+Use only this plugin's `figurelabs` MCP connection and follow each tool's live schema.
 
-## Choose the workflow once per user request
+## Pick the tool
 
-- Ordinary drawing, drafts, previews, or no stated purpose: use the fast path. Do not ask the user to choose a purpose or infer publication use merely because the subject is scientific.
-- Explicit download/export or use in a paper, presentation or publication: read [delivery checks](references/delivery-checks.md) and perform only the checks relevant to that intent.
-- Actual failed status, timeout or generation anomaly: read [recovery](../figurelabs-browser-handoff/references/recovery.md) and diagnose the failing stage. Do not run every possible download or quality check.
-- Feedback about text, labels, layout or another existing-figure change: use [figurelabs-canvas-edit](../figurelabs-canvas-edit/SKILL.md) for focused correction, preferring suitable Text Edit, Region Redraw or layout controls.
+| The user has or wants | Tool |
+| --- | --- |
+| A mechanism, pathway, cell or device schematic, graphical abstract, concept figure; a hand sketch to turn into a figure; an image to redraw or clean up | `figurelabs_create_illustration` |
+| A chart of real data: an attached or uploaded data file, or numbers typed in the conversation | `figurelabs_create_plot` |
+| Steps, decisions and branches: protocols, study designs, analysis pipelines | `figurelabs_create_flowchart` |
+| A change to a figure made earlier | `figurelabs_edit_figure`, see [figurelabs-edit](../figurelabs-edit/SKILL.md) |
+| A figure or image separated into layers | `figurelabs_split_layers`, see [figurelabs-layers](../figurelabs-layers/SKILL.md) |
 
-Decide or change the path based on user intent and observed problems, not every tool return. Reuse instructions already read for this request. Browser open/refresh before delivery is mandatory in all paths.
+- Data plots use only data the user supplied. Never invent values, sample sizes, error bars or p-values, and never read numbers off a chart image to re-plot them as data. If columns, units or groups are unclear, ask before plotting.
+- Reuse a `workspace_id` only if that project has the same figure type. Without one, the tool starts a new project.
 
-## Submit the appropriate job once
+## Settings
 
-| Request | Tool | Input rule |
+Pass a setting only when the user asked for it or the material clearly calls for it; a value outside the list is refused with the allowed ones. Everything else about the look (colors, mood, a journal's style) goes in the prompt.
+
+| Parameter | Tools | Values |
 | --- | --- | --- |
-| Mechanisms, experimental illustrations, graphical abstracts | `figurelabs_illustration` | Reference images when needed |
-| Charts and statistical visualizations | `figurelabs_plot` | Actual user data or CSV/XLS/XLSX; never fabricated statistics |
-| Steps, nodes, arrows, branches and feedback loops | `figurelabs_flowchart` | Describe the intended semantic structure |
+| `style` | illustration, flowchart | `Flat` (default), `3D`, `2.5D`, `hand_drawn`, `line_art` |
+| `ratio` | illustration, flowchart, plot | `16:9`, `1:1`, `2:3`, `3:2`, `3:4`, `4:3`, `4:5`, `5:4`, `9:16`, `21:9`; omit to let FigureLabs choose |
+| `chart_style` | plot | `line`, `bar`, `scatter`, `area`, `histogram`, `box`, `violin`, `heatmap`; omit (or `auto`) to let FigureLabs choose |
+| `language` | all three | Language of the labels, for example `en` or `zh` |
+| `structure` | flowchart | The exact `nodes` (`id`, `label`) and `edges` (`from`, `to`, optional `label`) when the user has given them; omit to let FigureLabs work them out from the prompt |
 
-Follow the live schema. Load [figurelabs-file-import](../figurelabs-file-import/SKILL.md) only when input files need importing. An existing-figure edit requires the canvas-edit workflow, not a substitute create.
+## Files
 
-For create, reuse a known workspace only if its figure_type matches. Without workspace_id, create starts the corresponding project; no extra bootstrap is required. Explain a requested type switch that needs another project and preserve the old context.
+- **Reference images for an illustration** (a sketch, a reference figure, an image to redraw): pass them in `attachments` (ChatGPT) or `file_refs` (a `figfile_…` ID or a public `https://` link), up to 5, and say in the prompt what to do with them ("follow this sketch", "match this style", "redraw this image cleanly").
+- **Data for a plot:** `attachments` (ChatGPT), `file_refs` or `data_file_ids` for files, or `data` for CSV text the user typed or pasted. A plot needs at least one of them.
+- A flowchart takes no files.
+- For local files and file IDs, see [figurelabs-file-import](../figurelabs-file-import/SKILL.md).
 
-Use a stable idempotency_key per intended create/edit. For an uncertain submission, repeat the same request/key or query the known job; do not change the key to evade idempotency conflicts. Preserve the first handoff and IDs. You may open the project once while processing; no inspection/download pipeline follows that early opening. Record browser failure for preview fallback after an image becomes available.
+## Use the conversation
 
-## Follow the original job
+The model writes the prompt; the user should not have to.
 
-Query the same tool with operation=status and the original job_id. From the original submission time, poll about **every 5 seconds during the first 90 seconds, then every 10 seconds**. Respect actual rate-limit/retry delays. Retries and browser actions do not reset the timer; keep waits interruptible and updates useful.
+- When the user pastes an abstract, Methods text, protocol or results, offer one concrete figure in a sentence, for example "I can turn this into a graphical abstract: problem → approach → key result" or "a flowchart of the sample-preparation steps". Generate only after the user agrees.
+- When the user shares a data file, offer a plot that fits the data (for example group means with error bars, a time course, a correlation) and confirm the chart type and columns if they are not obvious.
+- Write a detailed prompt from the conversation: subject, every component and its label, relations and arrows, order or layout, emphasis, the audience (paper, poster, slides) and any style wishes the user gave. Use the terminology of the user's field. See [prompt writing](references/prompt-writing.md).
+- Keep labels in the user's language unless they ask for another, and pass it in `language`.
 
-- processing: still running; do not trigger delivery or repeat navigation on each poll.
-- completed: original generation finished; retain file URL, MIME type, version and actual credits_charged, then deliver once.
-- failed: diagnose the business failure even when isError=false or HTTP is 200.
-- isError=true or a transport/auth error: distinguish a failed query from a failed generation, and recover the original job when possible.
+## Credits
 
-At 10 minutes, check the same job once more and diagnose an unresolved result. Client timeout is not a confirmed terminal failure. Preserve the job/link and do not automatically launch another charged generation. New generation after a confirmed failure must be supported by the user's intent/authorization and the actual retry conditions.
+Creating a figure spends credits from the user's FigureLabs plan. Before the first create or edit in a conversation, say so in one sentence together with what you are about to generate. If the user asked for the figure directly, go ahead in the same turn; if you proposed it, wait for agreement. Results report `credits_charged`; mention it when it is present.
 
-## Deliver and finish
+`figurelabs_get_credits` is read-only and free: it returns the spendable credits, the plan, and whether this connection works in the user's team or personal space. The two spaces share neither credits nor figures, and figures made through this connection go to the space it names. Call it when the user asks about their balance or where their figures go, or before a large batch; not before every figure, since the create tools report a shortfall themselves. On an `insufficient_credits` error, say the credits are insufficient and give the plans link from the error; do not retry.
 
-Apply [figurelabs-browser-handoff](../figurelabs-browser-handoff/SKILL.md): open or refresh before final delivery. On success, tell the user to view the result in the opened browser page and provide the project link; do not add a chat image by default. For an explicit chat-image request or browser failure, use preview first, then the eligible client-local file fallback if preview is unavailable or fails. Never use image_url/download_url as Markdown image sources. In the fast path, finish after delivery; do not download or analyze the original merely because a URL exists.
+## Submit once
 
-Current completed responses may contain only download_url and omit image_url, workspace_id or browser_handoff. Retain earlier context for that same job. Preview completion/zero preview credits must not overwrite the generation outcome or cost. Repeat quality checks only when the relevant version, export requirements or user feedback changes.
+- Call the tool once per intended figure. Omit `idempotency_key` on a first call; the server picks one.
+- When a call fails with a temporary error, its message names the key it used: call again with the same arguments and that `idempotency_key`, so FigureLabs does not run and charge the request twice. Use a new key only for a new or changed request.
+- Never submit again to fix a display or waiting problem. Follow the existing job instead.
+- Then follow [figurelabs-delivery](../figurelabs-delivery/SKILL.md) to wait for and present the result.
