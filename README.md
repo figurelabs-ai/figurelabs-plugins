@@ -65,7 +65,7 @@ Then start a new conversation; running sessions keep the copy they loaded.
 
 ## Try it
 
-- "Turn this abstract into a graphical abstract with clearly labeled steps." (paste an abstract)
+- "Turn this paper abstract into a graphical abstract that highlights the key finding." (paste an abstract)
 - "Plot the attached CSV as a bar chart with error bars, one bar per treatment group."
 - "Draw a flowchart of the experimental procedure described in my Methods section."
 - "Turn this hand sketch into a clean schematic." (with the sketch attached or as a local file)

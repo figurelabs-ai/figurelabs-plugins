@@ -1,6 +1,6 @@
 {
   "name": "figurelabs",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Design scientific figures and diagrams in FigureLabs: mechanism illustrations, graphical abstracts, data plots from your own files, and flowcharts, editable in a FigureLabs project and splittable into layers.",
   "author": {
     "name": "FigureLabs",
@@ -36,7 +36,7 @@
     "privacyPolicyURL": "https://www.figurelabs.ai/privacy",
     "termsOfServiceURL": "https://www.figurelabs.ai/terms",
     "defaultPrompt": [
-      "Turn this paper abstract into a graphical abstract with clearly labeled steps.",
+      "Turn this paper abstract into a graphical abstract that highlights the key finding.",
       "Plot the attached CSV as a bar chart with error bars, one bar per treatment group.",
       "Draw a flowchart of the experimental procedure described in my Methods section."
     ],
