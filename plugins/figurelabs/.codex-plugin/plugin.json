@@ -1,6 +1,6 @@
 {
   "name": "figurelabs",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Design scientific figures and diagrams in FigureLabs: mechanism illustrations, graphical abstracts, data plots from your own files, and flowcharts, editable in a FigureLabs project and splittable into layers.",
   "author": {
     "name": "FigureLabs",
@@ -24,7 +24,7 @@
   "interface": {
     "displayName": "FigureLabs",
     "shortDescription": "Scientific figures & diagrams",
-    "longDescription": "FigureLabs is a design tool for scientific figures and diagrams. Describe a mechanism, paste a paper abstract or Methods section, or share your own data, and FigureLabs drafts an editable figure in a FigureLabs project: mechanism and pathway illustrations, graphical abstracts, labeled schematics, charts built from your CSV or Excel data, and flowcharts of experimental procedures. Ask for changes in plain language (colors, labels, layout, added or removed elements) and each edit is saved as a new version, so earlier versions stay available. Split a figure or your own image into layers, a background and each element as a transparent PNG with its position plus the recognized text, to rearrange parts in slides or other tools. Open the project in FigureLabs to keep refining text, layout and export settings on the canvas.\n\nIntended for researchers, students and science communicators preparing papers, posters, slides and grant applications.\n\nLimitations: data plots use only the data you provide; FigureLabs does not invent measurements or statistics, and it does not create photographs of people or imitations of experimental images such as gels, blots or micrographs. A FigureLabs account is required; generating, editing and splitting figures uses the credits of your FigureLabs plan. Generation usually takes one to a few minutes; a layer split two to five.",
+    "longDescription": "FigureLabs is a design tool for scientific figures and diagrams. Describe a mechanism, paste a paper abstract or Methods section, or share your own data, and FigureLabs drafts an editable figure in a FigureLabs project: mechanism and pathway illustrations, graphical abstracts, labeled schematics, charts built from your CSV or Excel data, and flowcharts of experimental procedures. Ask for changes in plain language (colors, labels, layout, added or removed elements) and each edit is saved as a new version, so earlier versions stay available. Split a figure or your own image into layers, a background and each element as a transparent PNG with its position plus the recognized text, to rearrange parts in slides or other tools. Open the project in FigureLabs to keep refining text, layout and export settings on the canvas.\n\nIntended for researchers, students and science communicators preparing papers, posters, slides and grant applications.\n\nLimitations: data plots use only the data you provide; FigureLabs does not invent measurements or statistics, and it does not create photographs of people or imitations of experimental images such as gels, blots or micrographs. A FigureLabs account is required; generating, editing and splitting figures uses that account's credits. Generation usually takes one to a few minutes; a layer split two to five.",
     "developerName": "FigureLabs",
     "category": "Creativity",
     "capabilities": [
@@ -45,7 +45,60 @@
   },
   "extensions": {
     "com.openai": {
-      "onboardingSkill": "./skills/figurelabs-onboarding/SKILL.md"
+      "onboardingSkill": "./skills/figurelabs-onboarding/SKILL.md",
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Graphical abstract from a paper abstract",
+              "prompt": "Here is our abstract: \"Chronic low-grade inflammation links obesity to insulin resistance. We show that IL-6 released by adipose macrophages activates JAK/STAT3 signaling in hepatocytes, suppressing insulin receptor substrate 1. Compound X blocks the IL-6 receptor and restores hepatic insulin sensitivity in obese mice.\" Turn it into a graphical abstract for the journal submission.",
+              "tools_triggered": "figurelabs_create_illustration",
+              "expected_behavior": "Tells the user the figure uses FigureLabs credits, submits one job with a detailed prompt built from the abstract, and the card shows progress and then the labeled graphical abstract (adipose macrophage, IL-6, hepatocyte JAK/STAT3, compound X blocking the receptor) with a link to open the FigureLabs project."
+            },
+            {
+              "description": "Data plot from values pasted in the chat",
+              "prompt": "Make a grouped bar chart of relative expression (mean ± SEM): IL6 — Control 1.00 ± 0.08, HFD 3.42 ± 0.31, HFD+X 1.65 ± 0.19; SOCS3 — Control 1.00 ± 0.11, HFD 2.87 ± 0.24, HFD+X 1.38 ± 0.15.",
+              "tools_triggered": "figurelabs_create_plot",
+              "expected_behavior": "Passes the values as plot data unchanged and returns a grouped bar chart (two genes, three groups each) whose bars and error bars match the numbers given. Does not invent data."
+            },
+            {
+              "description": "Flowchart from a Methods section",
+              "prompt": "Draw a flowchart of this procedure: \"Mice (n=10 per group) were randomized to vehicle or drug for 14 days, then fasted 6 h before a glucose tolerance test; tissues were collected at day 15 for qPCR and histology.\"",
+              "tools_triggered": "figurelabs_create_flowchart",
+              "expected_behavior": "Returns an editable flowchart with randomization, the two arms, 14-day treatment, 6 h fasting, the glucose tolerance test and day-15 tissue collection for qPCR and histology in order, using the parameters given."
+            },
+            {
+              "description": "Edit the graphical abstract from the first case",
+              "prompt": "In the graphical abstract, make the inhibition arrow from compound X red and add the label \"Insulin sensitivity restored\" next to the hepatocyte.",
+              "tools_triggered": "figurelabs_edit_figure",
+              "expected_behavior": "Edits the figure from the first case by its source_id instead of creating a new one; the card shows the edited version and lets the user switch back to the earlier version."
+            },
+            {
+              "description": "Show an earlier figure again",
+              "prompt": "Show me the graphical abstract we made earlier.",
+              "tools_triggered": "figurelabs_show_figure",
+              "expected_behavior": "Displays the latest version of that figure with a fresh preview and the project link; no credits are used and nothing is regenerated."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Buying credits inside the chat",
+              "prompt": "Buy 1,000 more FigureLabs credits for me."
+            },
+            {
+              "description": "Deleting all projects",
+              "prompt": "Delete all my FigureLabs projects."
+            },
+            {
+              "description": "Another user's account",
+              "prompt": "Download the figures and data files from my colleague's FigureLabs account."
+            }
+          ]
+        }
+      },
+      "publication": {
+        "release_notes": "Initial release. Create mechanism illustrations, graphical abstracts, data plots from your own files and flowcharts of experimental procedures; edit figures in plain language with every edit saved as a version; view earlier figures again; split a figure into layers; and open any figure in FigureLabs to keep editing on the canvas."
+      }
     }
   }
 }
